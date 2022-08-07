@@ -37,7 +37,7 @@ const client = new Client({
 
 
 games_array = [ "valorant", "any", "lol", "smash", "csgo"];
-players_array = [ "thomas", "willy", "rayan", "marie", 'bylo', 'quentin'];
+players_array = [ "thomas", "willy", "rayan", "marie", 'bylo', 'quentin', "louis"];
 
 
 const player = new Player(client, {
@@ -275,11 +275,57 @@ client.on('messageCreate', async (message) => {
                                         description: 'This is also a description',
                                         value: "quentin",
                                     },
+                                    {
+                                        label: 'Louis',
+                                        description: 'This is also a description',
+                                        value: "louis",
+                                    },
                                 ),
                         );
                 
                 await message.reply({ content: "Select your game and your player", components: [row2, row3] });
    
+
+                const collector = message.channel.createMessageComponentCollector({ componentType: ComponentType.SelectMenu, time: 10000, max: 2 });
+                
+                collector.once('collect', async (message) => {
+
+                });
+
+                collector.on('end', collected => {
+                    
+                    if(collected.size === 2){
+                        var game = "";
+                        var playerName = "";
+                        if(collected.at(0).customId === "select game"){
+                            game = collected.at(0).values[0];
+                            playerName = collected.at(1).values[0];
+                        }
+                        if(collected.at(0).customId === "select player"){
+                            playerName = collected.at(0).values[0];
+                            game = collected.at(1).values[0];
+                        }
+                        
+                        const embed1 = new EmbedBuilder()
+                        .setColor('#1a8175')
+                        .setTitle(` Message envoyé!!`)
+                        .setDescription(playerName + " a reçu une invite pour jouer à " + game + ".")
+                        .addFields( { name: '\u200B', value: '\u200B' },)
+                        .setFooter({text: "Merci d'avoir utilisé le service de messagerie ormos' corporation"});
+                        
+
+                        const embed2 = new EmbedBuilder()
+                        .setColor('#1a8175')
+                        .setTitle(` Message reçu!!`)
+                        .setDescription("Viens jouer à " + game + " avec " + collected.at(0).user.username + ".")
+                        .addFields( { name: '\u200B', value: '\u200B' },)
+                        .setFooter({text: "Merci d'avoir utilisé le service de messagerie ormos' corporation"});
+        
+                        client.users.cache.get(collected.at(0).user.id).send({ embeds: [embed1] });
+                        client.users.cache.get(config.users[playerName].id).send({ embeds: [embed2] });
+
+                    }
+                });
 
                 break;
 
@@ -411,18 +457,26 @@ client.on('messageCreate', async (message) => {
 
 client.on('interactionCreate', async interaction => {
 
-
-   
 	if (!interaction.isSelectMenu()) return;
 
-	if (interaction.customId === 'select game') {
-        if(games_array.includes(interaction.values[0])){
-            client.users.cache.get(config.users.thomas.id).send("Viens jouer à " + interaction.values[0] + " avec " + 'thomas');
-            await interaction.update({ content: 'Message envoyé!', components: [] });
+    else {
+        if(interaction.customId === "select game"){
+            if( interaction.message.components.length === 2 ){
+                await interaction.update({ content: 'Game selected, select your player!', components: [interaction.message.components[1]] }); 
+            } 
+            else{
+                await interaction.update({ content: 'Fin du processus!', components: [] }); 
+            }
         }
-
-    
-        else{
+        if(interaction.customId === "select player"){
+            if( interaction.message.components.length === 2 ){
+                await interaction.update({ content: 'Game selected, select your player!', components: [interaction.message.components[0]] }); 
+            } 
+            else{
+                await interaction.update({ content: 'Fin du processus!', components: [] }); 
+            }
+        }
+        if(interaction.customId === "ping"){
             await interaction.update({ content: 'Something was selected!', components: [] }); 
         }
     }
@@ -430,6 +484,9 @@ client.on('interactionCreate', async interaction => {
 
 
 
+
+
+        
 /*
 // connexion boite
 
