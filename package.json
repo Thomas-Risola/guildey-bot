@@ -1,0 +1,20 @@
+{
+  "name": "discord_bot",
+  "version": "1.0.0",
+  "description": "super bot coaché par bylo mais marie veut une dédicace",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "MOI(AVEC LA GROSSE TETE)",
+  "license": "ISC",
+  "dependencies": {
+    "@discordjs/opus": "^0.8.0",
+    "@discordjs/rest": "^1.0.1",
+    "@discordjs/voice": "^0.11.0",
+    "axios": "^0.27.2",
+    "discord-music-player": "^9.0.2",
+    "discord-player": "^5.2.2",
+    "discord.js": "^14.1.1"
+  }
+}
