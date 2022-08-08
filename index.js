@@ -13,12 +13,6 @@ const settings = {
 };
 
 var troll = 0;
-var bipboupbap = 1;
-
-
-const global = {
-    case1: '4',
-};
 
 const riotApiKey = ("")
 
@@ -92,9 +86,6 @@ client.on("ready", () => {
         status: 'dnd',
       });
   });
-
-
-
 
 
 
@@ -336,9 +327,6 @@ client.on('messageCreate', async (message) => {
                 const rawData = fs.readFileSync("config.json");
                 let jsonData = JSON.parse(rawData);
 
-
-
-                console.log(jsonData["users"][discordName]["leagueName"]);
                 jsonData["users"][discordName]["leagueName"] = name;                       
 
                 const data = JSON.stringify(jsonData, null, 2);
@@ -351,12 +339,10 @@ client.on('messageCreate', async (message) => {
 
  
 
-
 // Note à moi même : ranger un jour le code dans des boites
 // là c'est la boite musique
 
-
-    
+ 
     if(message.content.endsWith(settings.suffix)){
         const fullMessageWithoutSuffix = message.content.substring(0, message.content.length - 2)
         const args = fullMessageWithoutSuffix.slice().trim().split(/ +/g);
@@ -486,103 +472,137 @@ client.on('interactionCreate', async interaction => {
 
 
 
-        
-/*
 // connexion boite
 
 client.on("presenceUpdate", (oldPresence, newPresence) => {
 
+    const currentDate = new Date();
+    const nextDate = new Date(new Date().getTime() + 15 * 60 * 60 * 1000);
+  
+    const rawData = fs.readFileSync("config.json");
+    let jsonData = JSON.parse(rawData);
+                       
+    // thomas
+    if(newPresence.userId === config.users.thomas.id){ 
+        nextSpamTime = new Date(jsonData["users"]["thomas"]["next_spam"]); 
 
-    if (bipboupbap === 0){
-        client.channels.cache.get(ChannelId).send("bipboupbap je suis un stalker ;)");
-        bipboupbap += 1;
+        if ((nextSpamTime < currentDate) && ((newPresence.clientStatus.desktop === "online" && oldPresence.status? oldPresence.status === "offline" : false) 
+        || (newPresence.clientStatus.desktop === "dnd" && oldPresence.status? oldPresence.status === "offline" : false)
+        )){
+            var message = "Ave Creator!" + "<@" + newPresence.userId + ">";
+            client.channels.cache.get(settings.channelId).send(message);
+            client.users.cache.get(newPresence.userId).send("Bouh?");
+            jsonData["users"]["thomas"]["next_spam"] = nextDate; 
+            const data = JSON.stringify(jsonData, null, 2);
+            fs.writeFileSync("config.json", data);
+        }
     }
     // marie
-    if(newPresence.userId === config.users.marie){
-        if (bipboupbap === 1 && ((newPresence.clientStatus.desktop === "online" && oldPresence.status? oldPresence.status === "offline"  : false) 
+
+    
+    if(newPresence.userId === config.users.marie.id){
+        nextSpamTime = jsonData["users"]["marie"]["next_spam"]; 
+        if ((nextSpamTime < currentDate) && ((newPresence.clientStatus.desktop === "online" && oldPresence.status? oldPresence.status === "offline"  : false) 
         || (newPresence.clientStatus.desktop === "dnd" && oldPresence.status? oldPresence.status === "offline" : false)
         || (newPresence.clientStatus.desktop === "dnd" && oldPresence.status? oldPresence.clientStatus.mobile === "dnd" : false))
     ){
             //var message = "dites bonjour à l'egirl *UwU* " + "<@" + newPresence.userId + ">";
             //client.channels.cache.get(settings.channelId).send(message);
             client.users.cache.get(newPresence.userId).send(".--- .----. .- .. / .--. . .-. -.. ..-");
-            bipboupbap += 1;
+            jsonData["users"]["marie"]["next_spam"] = nextDate; 
+            const data = JSON.stringify(jsonData, null, 2);
+            fs.writeFileSync("config.json", data);
         }
     }
-    // thomas
-    if(newPresence.userId === config.users.thomas){ 
-        if ((newPresence.clientStatus.desktop === "online" && oldPresence.status? oldPresence.status === "offline" : false) 
-        || (newPresence.clientStatus.desktop === "dnd" && oldPresence.status? oldPresence.status === "offline" : false)
-        ){
-            var message = "Ave Creator!" + "<@" + newPresence.userId + ">";
-            client.channels.cache.get(settings.channelId).send(message);
-            client.users.cache.get(newPresence.userId).send("Bouh?");
-        }
-    }
+   
     // willy
-    if(newPresence.userId === config.users.willy){ 
-        if (newPresence.clientStatus.desktop === "online" && oldPresence.status? oldPresence.status === "offline" : false){
+    if(newPresence.userId === config.users.willy.id){ 
+        nextSpamTime = jsonData["users"]["willy"]["next_spam"]; 
+        if ((nextSpamTime < currentDate) && (newPresence.clientStatus.desktop === "online" && oldPresence.status? oldPresence.status === "offline" : false)){
             var message = "Yo Dieu!" + "<@" + newPresence.userId + ">";
             client.channels.cache.get(settings.channelId).send(message);
-            client.users.cache.get(newPresence.userId).send('Tu veux game?');
+            client.users.cache.get(newPresence.userId).send('Bouh!');
+            jsonData["users"]["willy"]["next_spam"] = nextDate; 
+            const data = JSON.stringify(jsonData, null, 2);
+            fs.writeFileSync("config.json", data);
         }
     }
     // rayan
-    if(newPresence.userId === config.users.rayan){ 
-        if ((newPresence.clientStatus.desktop === "online" && oldPresence.status? oldPresence.status === "offline" : false)
-        || (newPresence.clientStatus.desktop === "dnd" && oldPresence.status? oldPresence.status === "offline" : false)){
+    if(newPresence.userId === config.users.rayan.id){ 
+        nextSpamTime = jsonData["users"]["rayan"]["next_spam"];
+        if ((nextSpamTime < currentDate) && ((newPresence.clientStatus.desktop === "online" && oldPresence.status? oldPresence.status === "offline" : false)
+        || (newPresence.clientStatus.desktop === "dnd" && oldPresence.status? oldPresence.status === "offline" : false))){
             var message = "Yo Le Mec Le Plus Gentil Du Bahut!" + "<@" + newPresence.userId + ">";
             client.channels.cache.get(settings.channelId).send(message);
+            client.users.cache.get(newPresence.userId).send('Bouh!');
+            jsonData["users"]["rayan"]["next_spam"] = nextDate; 
+            const data = JSON.stringify(jsonData, null, 2);
+            fs.writeFileSync("config.json", data);
         }
     }
     // tugra
     /*
-    if(newPresence.userId === config.users.tugra){ 
+    if(newPresence.userId === config.users.tugra.id){ 
         if (newPresence.clientStatus.desktop === "online" && oldPresence? oldPresence.status === "offline" : false){
             var message = "Yo BG, what's up?" + "<@" + newPresence.userId + ">";
-            client.channels.cache.get(settings.channelId).send(message);      
+            client.channels.cache.get(settings.channelId).send(message);   
+            jsonData["users"]["rayan"]["next_spam"] = nextDate; 
+            const data = JSON.stringify(jsonData, null, 2);
+            fs.writeFileSync("config.json", data);   
         }
     }
     
-    
+    */
     // bylo
-    if(newPresence.userId === config.users.bylo){ 
-        if (newPresence.clientStatus.desktop === "online" && oldPresence.status? oldPresence.status === "offline" : false){
-            client.users.cache.get(newPresence.userId).send(':) un peu de bonheur dans ce monde');
+    if(newPresence.userId === config.users.bylo.id){ 
+        nextSpamTime = jsonData["users"]["bylo"]["next_spam"];
+        if ((nextSpamTime < currentDate) && (newPresence.clientStatus.desktop === "online" && oldPresence.status? oldPresence.status === "offline" : false)
+        || (newPresence.clientStatus.mobile === "online" && oldPresence.status? oldPresence.status === "offline" : false)){
+            client.users.cache.get(newPresence.userId).send("Yo j'ai fix le spamming du bot si tu deco reco en boucle :)");
+            jsonData["users"]["bylo"]["next_spam"] = nextDate; 
+            const data = JSON.stringify(jsonData, null, 2);
+            fs.writeFileSync("config.json", data);
         }
     }
+    /*
     // yanis
-    if(newPresence.userId === config.users.yanis){ 
+    if(newPresence.userId === config.users.yanis.id){ 
         if (newPresence.clientStatus.desktop === "online" && oldPresence.status? oldPresence.status === "offline" : false){
             var message = "Mes salutations sage biteman!" + "<@" + newPresence.userId + ">";
             client.channels.cache.get(settings.channelId).send(message);
             client.users.cache.get(newPresence.userId).send('Bouh');
         }
     }
+    */
     // etienne
-    if(newPresence.userId === config.users.etienne){ 
-        if (newPresence.clientStatus.desktop === "online" && oldPresence.status? oldPresence.status === "offline" : false){
+    if(newPresence.userId === config.users.etienne.id){ 
+        nextSpamTime = jsonData["users"]["metalem"]["next_spam"];
+        if ((nextSpamTime < currentDate) && (newPresence.clientStatus.desktop === "online" && oldPresence.status? oldPresence.status === "offline" : false)){
             var message = "Oh noooooo un démon BDSM!" + "<@" + newPresence.userId + ">";
             client.channels.cache.get(settings.channelId).send(message);
             client.users.cache.get(newPresence.userId).send('Bouh');
+            jsonData["users"]["metalem"]["next_spam"] = nextDate; 
+            const data = JSON.stringify(jsonData, null, 2);
+            fs.writeFileSync("config.json", data);
         }
     }
+    /*
     // iziker
-    if(newPresence.userId === config.users.iziker){ 
+    if(newPresence.userId === config.users.iziker.id){ 
         if (newPresence.clientStatus.desktop === "online" && oldPresence.status? oldPresence.status === "offline" : false){
             var message = "QUEL SEIGNEUR! Il détruit la botlane Fnatic!" + "<@" + newPresence.userId + ">";
             client.channels.cache.get(settings.channelId).send(message);
         }
     }
     // darion
-    if(newPresence.userId === config.users.darion){ 
+    if(newPresence.userId === config.users.darion.id){ 
         if (newPresence.clientStatus.desktop === "online" && oldPresence.status? oldPresence.status === "offline" : false){
             var message = "Yo maître " + "<@" + newPresence.userId + ">";
             client.channels.cache.get(settings.channelId).send(message);
         }
     }
     // léo
-    if(newPresence.userId === config.users.léo){ 
+    if(newPresence.userId === config.users.léo.id){ 
         if (newPresence.clientStatus.desktop === "online" && oldPresence.status? oldPresence.status === "offline" : false){
             //var message = "daddy " + "<@" + newPresence.userId + ">" + " est là pour nous carry";
             //client.channels.cache.get(settings.channelId).send(message);
@@ -590,7 +610,7 @@ client.on("presenceUpdate", (oldPresence, newPresence) => {
         }
     }
     // Gaetan
-    if(newPresence.userId === config.users.manel){ 
+    if(newPresence.userId === config.users.manel.id){ 
         if (newPresence.clientStatus.desktop === "online" && oldPresence.status? oldPresence.status === "offline" : false){
             //var message = "daddy " + "<@" + newPresence.userId + ">" + " est là pour nous carry";
             //client.channels.cache.get(settings.channelId).send(message);
@@ -598,16 +618,16 @@ client.on("presenceUpdate", (oldPresence, newPresence) => {
             }
     }
     // Louis
-    if(newPresence.userId === config.users.louis){ 
+    if(newPresence.userId === config.users.louis.id){ 
         if (newPresence.clientStatus.desktop === "online" && oldPresence.status? oldPresence.status === "offline" : false){
             var message = "L'ouragan arrive, fuyez!!! " + "<@" + newPresence.userId + ">" ;
             client.channels.cache.get(settings.channelId).send(message);
             client.users.cache.get(newPresence.userId).send('Bouh');
         }
     }
-    
+   */ 
 });
-*/
+
 
 
 client.login(config.BOT_TOKEN);
