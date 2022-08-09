@@ -501,14 +501,15 @@ client.on("presenceUpdate", (oldPresence, newPresence) => {
 
     
     if(newPresence.userId === config.users.marie.id){
-        nextSpamTime = jsonData["users"]["marie"]["next_spam"]; 
+        nextSpamTime = new Date(jsonData["users"]["marie"]["next_spam"]); 
         if ((nextSpamTime < currentDate) && ((newPresence.clientStatus.desktop === "online" && oldPresence.status? oldPresence.status === "offline"  : false) 
         || (newPresence.clientStatus.desktop === "dnd" && oldPresence.status? oldPresence.status === "offline" : false)
-        || (newPresence.clientStatus.desktop === "dnd" && oldPresence.status? oldPresence.clientStatus.mobile === "dnd" : false))
+        || (newPresence.clientStatus.desktop === "dnd" && oldPresence.status? oldPresence.clientStatus.mobile === "dnd" : false)
+        || (newPresence.clientStatus.desktop !== oldPresence.clientStatus.desktop))
     ){
             //var message = "dites bonjour à l'egirl *UwU* " + "<@" + newPresence.userId + ">";
             //client.channels.cache.get(settings.channelId).send(message);
-            client.users.cache.get(newPresence.userId).send(".--- .----. .- .. / .--. . .-. -.. ..-");
+            client.users.cache.get(newPresence.userId).send("C'est lose");
             jsonData["users"]["marie"]["next_spam"] = nextDate; 
             const data = JSON.stringify(jsonData, null, 2);
             fs.writeFileSync("config.json", data);
@@ -517,7 +518,7 @@ client.on("presenceUpdate", (oldPresence, newPresence) => {
    
     // willy
     if(newPresence.userId === config.users.willy.id){ 
-        nextSpamTime = jsonData["users"]["willy"]["next_spam"]; 
+        nextSpamTime = new Date(jsonData["users"]["willy"]["next_spam"]); 
         if ((nextSpamTime < currentDate) && (newPresence.clientStatus.desktop === "online" && oldPresence.status? oldPresence.status === "offline" : false)){
             var message = "Yo Dieu!" + "<@" + newPresence.userId + ">";
             client.channels.cache.get(settings.channelId).send(message);
@@ -529,7 +530,7 @@ client.on("presenceUpdate", (oldPresence, newPresence) => {
     }
     // rayan
     if(newPresence.userId === config.users.rayan.id){ 
-        nextSpamTime = jsonData["users"]["rayan"]["next_spam"];
+        nextSpamTime = new Date(jsonData["users"]["rayan"]["next_spam"]);
         if ((nextSpamTime < currentDate) && ((newPresence.clientStatus.desktop === "online" && oldPresence.status? oldPresence.status === "offline" : false)
         || (newPresence.clientStatus.desktop === "dnd" && oldPresence.status? oldPresence.status === "offline" : false))){
             var message = "Yo Le Mec Le Plus Gentil Du Bahut!" + "<@" + newPresence.userId + ">";
@@ -555,9 +556,9 @@ client.on("presenceUpdate", (oldPresence, newPresence) => {
     */
     // bylo
     if(newPresence.userId === config.users.bylo.id){ 
-        nextSpamTime = jsonData["users"]["bylo"]["next_spam"];
+        nextSpamTime = new Date(jsonData["users"]["bylo"]["next_spam"]);
         if ((nextSpamTime < currentDate) && (newPresence.clientStatus.desktop === "online" && oldPresence.status? oldPresence.status === "offline" : false)
-        || (newPresence.clientStatus.mobile === "online" && oldPresence.status? oldPresence.status === "offline" : false)){
+        ){
             client.users.cache.get(newPresence.userId).send("Yo j'ai fix le spamming du bot si tu deco reco en boucle :)");
             jsonData["users"]["bylo"]["next_spam"] = nextDate; 
             const data = JSON.stringify(jsonData, null, 2);
@@ -575,8 +576,8 @@ client.on("presenceUpdate", (oldPresence, newPresence) => {
     }
     */
     // etienne
-    if(newPresence.userId === config.users.etienne.id){ 
-        nextSpamTime = jsonData["users"]["metalem"]["next_spam"];
+    if(newPresence.userId === config.users.metalem.id){ 
+        nextSpamTime = new Date(jsonData["users"]["metalem"]["next_spam"]);
         if ((nextSpamTime < currentDate) && (newPresence.clientStatus.desktop === "online" && oldPresence.status? oldPresence.status === "offline" : false)){
             var message = "Oh noooooo un démon BDSM!" + "<@" + newPresence.userId + ">";
             client.channels.cache.get(settings.channelId).send(message);
