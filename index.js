@@ -14,7 +14,7 @@ const settings = {
 
 var troll = 0;
 
-const riotApiKey = ("RGAPI-da595300-8b35-47e1-aaf1-ba00a3461881")
+const riotApiKey = config.riotApiKey;
 
 const client = new Client({
 	intents: [
