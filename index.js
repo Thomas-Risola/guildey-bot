@@ -14,7 +14,7 @@ const settings = {
 
 var troll = 0;
 
-const riotApiKey = ("")
+const riotApiKey = ("RGAPI-da595300-8b35-47e1-aaf1-ba00a3461881")
 
 const client = new Client({
 	intents: [
@@ -86,6 +86,7 @@ client.on("ready", () => {
         status: 'dnd',
       });
   });
+
 
 
 
@@ -321,6 +322,7 @@ client.on('messageCreate', async (message) => {
                 break;
 
             case "add":
+                try{
                 const name = args[0];
                 const discordName = args[2];
 
@@ -331,6 +333,11 @@ client.on('messageCreate', async (message) => {
 
                 const data = JSON.stringify(jsonData, null, 2);
                 fs.writeFileSync("config.json", data);
+                }
+                catch(error){
+                    message.channel.send("William veut me détruire il n'est pas gentil ;(");
+
+                }
                 break;
         }         
     }
@@ -462,7 +469,7 @@ client.on('interactionCreate', async interaction => {
                 await interaction.update({ content: 'Fin du processus!', components: [] }); 
             }
         }
-        if(interaction.customId === "ping"){
+        if(interaction.customId === "select"){
             await interaction.update({ content: 'Something was selected!', components: [] }); 
         }
     }
@@ -501,6 +508,7 @@ client.on("presenceUpdate", (oldPresence, newPresence) => {
 
     
     if(newPresence.userId === config.users.marie.id){
+        console.log(oldPresence);
         nextSpamTime = new Date(jsonData["users"]["marie"]["next_spam"]); 
         if ((nextSpamTime < currentDate) && ((newPresence.clientStatus.desktop === "online" && oldPresence.status? oldPresence.status === "offline"  : false) 
         || (newPresence.clientStatus.desktop === "dnd" && oldPresence.status? oldPresence.status === "offline" : false)
@@ -509,7 +517,7 @@ client.on("presenceUpdate", (oldPresence, newPresence) => {
     ){
             //var message = "dites bonjour à l'egirl *UwU* " + "<@" + newPresence.userId + ">";
             //client.channels.cache.get(settings.channelId).send(message);
-            client.users.cache.get(newPresence.userId).send("C'est lose");
+            client.users.cache.get(newPresence.userId).send("Hi gl hf <3");
             jsonData["users"]["marie"]["next_spam"] = nextDate; 
             const data = JSON.stringify(jsonData, null, 2);
             fs.writeFileSync("config.json", data);
@@ -518,6 +526,7 @@ client.on("presenceUpdate", (oldPresence, newPresence) => {
    
     // willy
     if(newPresence.userId === config.users.willy.id){ 
+        console.log(oldPresence);
         nextSpamTime = new Date(jsonData["users"]["willy"]["next_spam"]); 
         if ((nextSpamTime < currentDate) && (newPresence.clientStatus.desktop === "online" && oldPresence.status? oldPresence.status === "offline" : false)){
             var message = "Yo Dieu!" + "<@" + newPresence.userId + ">";
@@ -542,24 +551,26 @@ client.on("presenceUpdate", (oldPresence, newPresence) => {
         }
     }
     // tugra
-    /*
+    
     if(newPresence.userId === config.users.tugra.id){ 
-        if (newPresence.clientStatus.desktop === "online" && oldPresence? oldPresence.status === "offline" : false){
+        console.log(oldPresence);
+        nextSpamTime = new Date(jsonData["users"]["tugra"]["next_spam"]);
+        if ((nextSpamTime < currentDate) && newPresence.clientStatus.desktop === "online" && oldPresence? oldPresence.status === "offline" : false){
             var message = "Yo BG, what's up?" + "<@" + newPresence.userId + ">";
             client.channels.cache.get(settings.channelId).send(message);   
-            jsonData["users"]["rayan"]["next_spam"] = nextDate; 
+            jsonData["users"]["tugra"]["next_spam"] = nextDate; 
             const data = JSON.stringify(jsonData, null, 2);
             fs.writeFileSync("config.json", data);   
         }
     }
     
-    */
     // bylo
     if(newPresence.userId === config.users.bylo.id){ 
+        console.log(oldPresence);
         nextSpamTime = new Date(jsonData["users"]["bylo"]["next_spam"]);
         if ((nextSpamTime < currentDate) && (newPresence.clientStatus.desktop === "online" && oldPresence.status? oldPresence.status === "offline" : false)
         ){
-            client.users.cache.get(newPresence.userId).send("Yo j'ai fix le spamming du bot si tu deco reco en boucle :)");
+            client.users.cache.get(newPresence.userId).send("What should I do today?");
             jsonData["users"]["bylo"]["next_spam"] = nextDate; 
             const data = JSON.stringify(jsonData, null, 2);
             fs.writeFileSync("config.json", data);
@@ -629,6 +640,80 @@ client.on("presenceUpdate", (oldPresence, newPresence) => {
    */ 
 });
 
+
+// number of requete ? 6 for now, limite à 20
+// faire un for user in users 
+async function lolTrackerFunction(){ 
+
+    let rawData = fs.readFileSync("config.json");
+    let jsonData = JSON.parse(rawData);
+
+    // ceci n'est qu'un test (à ameliorer)
+    const thomasProfile = await axios.get("https://euw1.api.riotgames.com/lol/summoner/v4/summoners/by-name/" + "HaeronIV" + "?api_key=" + riotApiKey);
+    const marieProfile = await axios.get("https://euw1.api.riotgames.com/lol/summoner/v4/summoners/by-name/" + "DaftSam" + "?api_key=" + riotApiKey);
+    
+    const thomas_puuid = thomasProfile.data.puuid;
+    const marie_puuid = marieProfile.data.puuid;
+
+    thomasMatchList = await axios.get("https://europe.api.riotgames.com/lol/match/v5/matches/by-puuid/" + thomas_puuid + "/ids" + "?api_key=" + riotApiKey);
+    marieMatchList = await axios.get("https://europe.api.riotgames.com/lol/match/v5/matches/by-puuid/" + thomas_puuid + "/ids" + "?api_key=" + riotApiKey);
+    
+    const thomasMatchListId = thomasMatchList.data[0];
+    const marieMatchListId = marieMatchList.data[0];
+
+    thomasLastMatch = await axios.get("https://europe.api.riotgames.com/lol/match/v5/matches/" + thomasMatchListId + "?api_key=" + riotApiKey);
+    marieLastMatch = await axios.get("https://europe.api.riotgames.com/lol/match/v5/matches/" + thomasMatchListId + "?api_key=" + riotApiKey);
+    
+    if(jsonData["users"]["thomas"]["lastGame"] != thomasMatchListId ){  
+        for (let pas = 0; pas < thomasLastMatch.data.info.participants.length; pas++) {
+            if(thomasLastMatch.data.info.participants[pas].summonerName === "Haeron IV"){   
+                victory = thomasLastMatch.data.info.participants[pas].win;
+                if(victory){
+                    
+                    var victoryScreen = new EmbedBuilder()
+                        .setDescription("hey Thomas a " + "win")
+                        .setThumbnail('http://ddragon.leagueoflegends.com/cdn/12.14.1/img/profileicon/'+ thomasProfile.data.profileIconId + '.png')
+                    client.channels.cache.get(settings.channelId).send({ embeds: [victoryScreen] });  
+                }
+                else{
+                    var victoryScreen = new EmbedBuilder()
+                        .setDescription("hey Thomas a " + "lose")
+                        .setThumbnail('http://ddragon.leagueoflegends.com/cdn/12.14.1/img/profileicon/'+ thomasProfile.data.profileIconId + '.png')       
+                    client.channels.cache.get(settings.channelId).send({ embeds: [victoryScreen] });
+                }
+            }      
+        } 
+        jsonData["users"]["thomas"]["lastGame"] = thomasMatchListId; 
+        const data = JSON.stringify(jsonData, null, 2);
+        fs.writeFileSync("config.json", data);    
+    }
+
+    if(jsonData["users"]["marie"]["lastGame"] !== marieMatchListId ){  
+        for (let pas = 0; pas < marieLastMatch.data.info.participants.length; pas++) {
+            if(marieLastMatch.data.info.participants[pas].summonerName === "DaftSam"){   
+                victory = marieLastMatch.data.info.participants[pas].win;
+                if(victory){
+                    var victoryScreen = new EmbedBuilder()
+                        .setDescription("hey Marie a " + "win")
+                        .setThumbnail('http://ddragon.leagueoflegends.com/cdn/12.14.1/img/profileicon/'+ marieProfile.data.profileIconId + '.png')
+                    client.channels.cache.get(settings.channelId).send({ embeds: [victoryScreen] });  
+                }
+                else{
+                    var victoryScreen = new EmbedBuilder()
+                        .setDescription("hey Marie a " + "lose")
+                        .setThumbnail('http://ddragon.leagueoflegends.com/cdn/12.14.1/img/profileicon/'+ marieProfile.data.profileIconId + '.png')       
+                    client.channels.cache.get(settings.channelId).send({ embeds: [victoryScreen] });
+                }
+            } 
+        }
+        jsonData["users"]["marie"]["lastGame"] = marieMatchListId; 
+        const data = JSON.stringify(jsonData, null, 2);
+        fs.writeFileSync("config.json", data);      
+    }
+}
+
+// 5 min intervalle : delai en millisecs
+setInterval(lolTrackerFunction, 1000*5*60);
 
 
 client.login(config.BOT_TOKEN);
