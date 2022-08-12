@@ -10,6 +10,7 @@ const settings = {
     suffix: '?',
     prefix: '?',
     channelId: "995053789625200730",
+    lolChannelId: "700486726899990528",
 };
 
 var troll = 0;
@@ -649,37 +650,42 @@ async function lolTrackerFunction(){
     let jsonData = JSON.parse(rawData);
 
     // ceci n'est qu'un test (à ameliorer)
-    const thomasProfile = await axios.get("https://euw1.api.riotgames.com/lol/summoner/v4/summoners/by-name/" + "HaeronIV" + "?api_key=" + riotApiKey);
-    const marieProfile = await axios.get("https://euw1.api.riotgames.com/lol/summoner/v4/summoners/by-name/" + "DaftSam" + "?api_key=" + riotApiKey);
+    const thomasProfile = await axios.get("https://euw1.api.riotgames.com/lol/summoner/v4/summoners/by-name/" + jsonData["users"]["thomas"]["leagueName"] + "?api_key=" + riotApiKey);
+    const marieProfile = await axios.get("https://euw1.api.riotgames.com/lol/summoner/v4/summoners/by-name/" + jsonData["users"]["marie"]["leagueName"] + "?api_key=" + riotApiKey);
     
     const thomas_puuid = thomasProfile.data.puuid;
     const marie_puuid = marieProfile.data.puuid;
 
     thomasMatchList = await axios.get("https://europe.api.riotgames.com/lol/match/v5/matches/by-puuid/" + thomas_puuid + "/ids" + "?api_key=" + riotApiKey);
-    marieMatchList = await axios.get("https://europe.api.riotgames.com/lol/match/v5/matches/by-puuid/" + thomas_puuid + "/ids" + "?api_key=" + riotApiKey);
+    marieMatchList = await axios.get("https://europe.api.riotgames.com/lol/match/v5/matches/by-puuid/" + marie_puuid + "/ids" + "?api_key=" + riotApiKey);
     
     const thomasMatchListId = thomasMatchList.data[0];
     const marieMatchListId = marieMatchList.data[0];
 
     thomasLastMatch = await axios.get("https://europe.api.riotgames.com/lol/match/v5/matches/" + thomasMatchListId + "?api_key=" + riotApiKey);
-    marieLastMatch = await axios.get("https://europe.api.riotgames.com/lol/match/v5/matches/" + thomasMatchListId + "?api_key=" + riotApiKey);
+    marieLastMatch = await axios.get("https://europe.api.riotgames.com/lol/match/v5/matches/" + marieMatchListId + "?api_key=" + riotApiKey);
     
-    if(jsonData["users"]["thomas"]["lastGame"] != thomasMatchListId ){  
+   
+    if(jsonData["users"]["thomas"]["lastGame"] !== thomasMatchListId ){ 
+        console.log(thomasLastMatch.data.info.participants)
         for (let pas = 0; pas < thomasLastMatch.data.info.participants.length; pas++) {
-            if(thomasLastMatch.data.info.participants[pas].summonerName === "Haeron IV"){   
+            if(thomasLastMatch.data.info.participants[pas].summonerName === jsonData["users"]["thomas"]["leagueName"]){   
                 victory = thomasLastMatch.data.info.participants[pas].win;
                 if(victory){
-                    
                     var victoryScreen = new EmbedBuilder()
-                        .setDescription("hey Thomas a " + "win")
-                        .setThumbnail('http://ddragon.leagueoflegends.com/cdn/12.14.1/img/profileicon/'+ thomasProfile.data.profileIconId + '.png')
-                    client.channels.cache.get(settings.channelId).send({ embeds: [victoryScreen] });  
+                        .setDescription("hey " + jsonData["users"]["thomas"]["leagueName"] + " a " + "win")
+                        .addFields({name: "KDA : ", value: thomasLastMatch.data.info.participants[pas].kills + "/" +  thomasLastMatch.data.info.participants[pas].deaths + "/" + thomasLastMatch.data.info.participants[pas].assists})
+                        .addFields({name: "LP : ", value: "pas disponible pour le moment"})
+                        .setThumbnail("http://ddragon.leagueoflegends.com/cdn/img/champion/splash/" + thomasLastMatch.data.info.participants[pas].championName + '_0.jpg');
+                    client.channels.cache.get(settings.lolChannelId).send({ embeds: [victoryScreen] });  
                 }
                 else{
                     var victoryScreen = new EmbedBuilder()
-                        .setDescription("hey Thomas a " + "lose")
-                        .setThumbnail('http://ddragon.leagueoflegends.com/cdn/12.14.1/img/profileicon/'+ thomasProfile.data.profileIconId + '.png')       
-                    client.channels.cache.get(settings.channelId).send({ embeds: [victoryScreen] });
+                        .setDescription("hey " + jsonData["users"]["thomas"]["leagueName"] + " a " + "lose")
+                        .addFields({name: "KDA : ", value: thomasLastMatch.data.info.participants[pas].kills + "/" +  thomasLastMatch.data.info.participants[pas].deaths + "/" + thomasLastMatch.data.info.participants[pas].assists})
+                        .addFields({name: "LP : ", value: "pas disponible pour le moment"})
+                        .setThumbnail("http://ddragon.leagueoflegends.com/cdn/img/champion/splash/" + thomasLastMatch.data.info.participants[pas].championName + '_0.jpg');      
+                    client.channels.cache.get(settings.lolChannelId).send({ embeds: [victoryScreen] });
                 }
             }      
         } 
@@ -690,19 +696,23 @@ async function lolTrackerFunction(){
 
     if(jsonData["users"]["marie"]["lastGame"] !== marieMatchListId ){  
         for (let pas = 0; pas < marieLastMatch.data.info.participants.length; pas++) {
-            if(marieLastMatch.data.info.participants[pas].summonerName === "DaftSam"){   
+            if(marieLastMatch.data.info.participants[pas].summonerName === jsonData["users"]["marie"]["leagueName"]){   
                 victory = marieLastMatch.data.info.participants[pas].win;
                 if(victory){
                     var victoryScreen = new EmbedBuilder()
-                        .setDescription("hey Marie a " + "win")
-                        .setThumbnail('http://ddragon.leagueoflegends.com/cdn/12.14.1/img/profileicon/'+ marieProfile.data.profileIconId + '.png')
-                    client.channels.cache.get(settings.channelId).send({ embeds: [victoryScreen] });  
+                        .setDescription("hey " + jsonData["users"]["marie"]["leagueName"] +  " a " + "win")
+                        .addFields({name: "KDA : ", value: marieLastMatch.data.info.participants[pas].kills + "/" +  marieLastMatch.data.info.participants[pas].deaths + "/" + marieLastMatch.data.info.participants[pas].assists})
+                        .addFields({name: "LP : ", value: "pas disponible pour le moment"})
+                        .setThumbnail("http://ddragon.leagueoflegends.com/cdn/img/champion/splash/" + marieLastMatch.data.info.participants[pas].championName + '_1.png')
+                    client.channels.cache.get(settings.lolChannelId).send({ embeds: [victoryScreen] });  
                 }
                 else{
                     var victoryScreen = new EmbedBuilder()
-                        .setDescription("hey Marie a " + "lose")
-                        .setThumbnail('http://ddragon.leagueoflegends.com/cdn/12.14.1/img/profileicon/'+ marieProfile.data.profileIconId + '.png')       
-                    client.channels.cache.get(settings.channelId).send({ embeds: [victoryScreen] });
+                        .setDescription("hey " + jsonData["users"]["marie"]["leagueName"] +  " a " + "lose")
+                        .addFields({name: "KDA : ", value: marieLastMatch.data.info.participants[pas].kills + "/" +  marieLastMatch.data.info.participants[pas].deaths + "/" + marieLastMatch.data.info.participants[pas].assists})
+                        .addFields({name: "LP : ", value: "pas disponible pour le moment"})
+                        .setThumbnail("http://ddragon.leagueoflegends.com/cdn/img/champion/splash/" + marieLastMatch.data.info.participants[pas].championName + '_1.png')       
+                    client.channels.cache.get(settings.lolChannelId).send({ embeds: [victoryScreen] });
                 }
             } 
         }
@@ -712,8 +722,8 @@ async function lolTrackerFunction(){
     }
 }
 
-// 5 min intervalle : delai en millisecs
-setInterval(lolTrackerFunction, 1000*5*60);
+// 7 min intervalle : delai en millisecs
+setInterval(lolTrackerFunction, 1000*60*7);
 
 
 client.login(config.BOT_TOKEN);
