@@ -240,8 +240,43 @@ client.on('messageCreate', async (message) => {
                                 .addOptions(
                                     {
                                         label: 'Thomas',
-                                        description: 'This is a description',
+                                        description: 'Le Créateur',
                                         value: "thomas" ,
+                                    },
+                                    {
+                                        label: 'Tugra',
+                                        description: 'This is a description',
+                                        value: "tugra" ,
+                                    },
+                                    {
+                                        label: 'Etienne',
+                                        description: 'This is a description',
+                                        value: "metalem" ,
+                                    },
+                                    {
+                                        label: 'Mathis',
+                                        description: 'This is a description',
+                                        value: "mathis" ,
+                                    },
+                                    {
+                                        label: 'Maxime',
+                                        description: 'This is a description',
+                                        value: "darion" ,
+                                    },
+                                    {
+                                        label: 'Léo',
+                                        description: 'This is a description',
+                                        value: "léo" ,
+                                    },
+                                    {
+                                        label: 'Yanis A.',
+                                        description: 'This is a description',
+                                        value: "yanis" ,
+                                    },
+                                    {
+                                        label: 'Yanis H.',
+                                        description: 'This is a description',
+                                        value: "iziker" ,
                                     },
                                     {
                                         label: 'William',
@@ -330,7 +365,7 @@ client.on('messageCreate', async (message) => {
                 const rawData = fs.readFileSync("config.json");
                 let jsonData = JSON.parse(rawData);
 
-                jsonData["users"][discordName]["leagueName"] = name;                       
+                jsonData["users"][discordName]["league"]["leagueName"] = name;                       
 
                 const data = JSON.stringify(jsonData, null, 2);
                 fs.writeFileSync("config.json", data);
@@ -339,6 +374,126 @@ client.on('messageCreate', async (message) => {
                     message.channel.send("William veut me détruire il n'est pas gentil ;(");
 
                 }
+                break;
+            
+            case "report":
+                const row4 = new ActionRowBuilder()
+                        .addComponents(
+                            new SelectMenuBuilder()
+                                .setCustomId('select report')
+                                .setPlaceholder('Nothing selected')
+                                .addOptions(
+                                    {
+                                        label: 'Tilt',
+                                        description: 'Ca lui servira de leçon',
+                                        value: 'rep1',
+                                    },
+                                    {
+                                        label: 'Noob',
+                                        description: 'l2p',
+                                        value: 'rep2',
+                                    },
+                                    {
+                                        label: 'Toxic',
+                                        description: 'Cheh',
+                                        value: 'rep3',
+                                    },
+                                ),
+                        );
+
+                    const row5 = new ActionRowBuilder()
+                        .addComponents(
+                            new SelectMenuBuilder()
+                                .setCustomId('select reported player')
+                                .setPlaceholder('Nothing selected')
+                                .addOptions(
+                                    {
+                                        label: 'Thomas',
+                                        description: 'Le Créateur',
+                                        value: "thomas" ,
+                                    },
+                                    {
+                                        label: 'Tugra',
+                                        description: 'This is a description',
+                                        value: "tugra" ,
+                                    },
+                                    {
+                                        label: 'Etienne',
+                                        description: 'This is a description',
+                                        value: "metalem" ,
+                                    },
+                                    {
+                                        label: 'Mathis',
+                                        description: 'This is a description',
+                                        value: "mathis" ,
+                                    },
+                                    {
+                                        label: 'Maxime',
+                                        description: 'This is a description',
+                                        value: "darion" ,
+                                    },
+                                    {
+                                        label: 'Léo',
+                                        description: 'This is a description',
+                                        value: "léo" ,
+                                    },
+                                    {
+                                        label: 'Yanis A.',
+                                        description: 'This is a description',
+                                        value: "yanis" ,
+                                    },
+                                    {
+                                        label: 'Yanis H.',
+                                        description: 'This is a description',
+                                        value: "iziker" ,
+                                    },
+                                    {
+                                        label: 'William',
+                                        description: 'This is also a description',
+                                        value: "willy",
+                                    },
+                                    {
+                                        label: 'Rayan',
+                                        description: 'This is also a description',
+                                        value: "rayan",
+                                    },
+                                    {
+                                        label: 'Marie',
+                                        description: 'This is also a description',
+                                        value: "marie",
+                                    },
+                                    {
+                                        label: 'Bylolipops',
+                                        description: 'This is also a description',
+                                        value: "bylo",
+                                    },
+                                    {
+                                        label: 'Quentin',
+                                        description: 'This is also a description',
+                                        value: "quentin",
+                                    },
+                                    {
+                                        label: 'Louis',
+                                        description: 'This is also a description',
+                                        value: "louis",
+                                    },
+                                ),
+                        );
+                
+                await message.reply({ content: "Select your game and your player", components: [row4, row5] });
+   
+
+                const reportCollector = message.channel.createMessageComponentCollector({ componentType: ComponentType.SelectMenu, time: 10000, max: 2 });
+                
+                reportCollector.once('collect', async (message) => {
+
+                });
+
+                reportCollector.on('end', collected => {
+                    
+                    return;
+                });
+
                 break;
         }         
     }
@@ -442,6 +597,7 @@ client.on('messageCreate', async (message) => {
                 console.log(ProgressBar.prettier);
             }
         } catch(error) {
+            console.log(error);
             var message = "ERROR ERROR! EMMERGENCY: le dev code mal!";
             client.channels.cache.get(settings.channelId).send(message);
         }
@@ -464,12 +620,32 @@ client.on('interactionCreate', async interaction => {
         }
         if(interaction.customId === "select player"){
             if( interaction.message.components.length === 2 ){
-                await interaction.update({ content: 'Game selected, select your player!', components: [interaction.message.components[0]] }); 
+                await interaction.update({ content: 'Player selected, select your game!', components: [interaction.message.components[0]] }); 
             } 
             else{
                 await interaction.update({ content: 'Fin du processus!', components: [] }); 
             }
         }
+
+        if(interaction.customId === "select report"){
+            if( interaction.message.components.length === 2 ){
+                await interaction.update({ content: 'report selected, select your player!', components: [interaction.message.components[1]] }); 
+            } 
+            else{
+                await interaction.update({ content: 'Fin du report!', components: [] }); 
+            }
+        }
+        if(interaction.customId === "select reported player"){
+            if( interaction.message.components.length === 2 ){
+                await interaction.update({ content: 'Player selected, select your report!', components: [interaction.message.components[0]] }); 
+            } 
+            else{
+                await interaction.update({ content: 'Fin du report!', components: [] }); 
+            }
+        }
+
+
+
         if(interaction.customId === "select"){
             await interaction.update({ content: 'Something was selected!', components: [] }); 
         }
@@ -483,6 +659,10 @@ client.on('interactionCreate', async interaction => {
 // connexion boite
 
 client.on("presenceUpdate", (oldPresence, newPresence) => {
+
+    if (oldPresence === null){
+        return ;
+    }
 
     const currentDate = new Date();
     const nextDate = new Date(new Date().getTime() + 15 * 60 * 60 * 1000);
@@ -509,16 +689,13 @@ client.on("presenceUpdate", (oldPresence, newPresence) => {
 
     
     if(newPresence.userId === config.users.marie.id){
-        console.log(oldPresence);
         nextSpamTime = new Date(jsonData["users"]["marie"]["next_spam"]); 
         if ((nextSpamTime < currentDate) && ((newPresence.clientStatus.desktop === "online" && oldPresence.status? oldPresence.status === "offline"  : false) 
         || (newPresence.clientStatus.desktop === "dnd" && oldPresence.status? oldPresence.status === "offline" : false)
-        || (newPresence.clientStatus.desktop === "dnd" && oldPresence.status? oldPresence.clientStatus.mobile === "dnd" : false)
-        || (newPresence.clientStatus.desktop !== oldPresence.clientStatus.desktop))
+        || (newPresence.clientStatus.desktop === "dnd" && oldPresence.status? oldPresence.clientStatus.mobile === "dnd" : false))
     ){
             //var message = "dites bonjour à l'egirl *UwU* " + "<@" + newPresence.userId + ">";
             //client.channels.cache.get(settings.channelId).send(message);
-            client.users.cache.get(newPresence.userId).send("Hi gl hf <3");
             jsonData["users"]["marie"]["next_spam"] = nextDate; 
             const data = JSON.stringify(jsonData, null, 2);
             fs.writeFileSync("config.json", data);
@@ -527,7 +704,6 @@ client.on("presenceUpdate", (oldPresence, newPresence) => {
    
     // willy
     if(newPresence.userId === config.users.willy.id){ 
-        console.log(oldPresence);
         nextSpamTime = new Date(jsonData["users"]["willy"]["next_spam"]); 
         if ((nextSpamTime < currentDate) && (newPresence.clientStatus.desktop === "online" && oldPresence.status? oldPresence.status === "offline" : false)){
             var message = "Yo Dieu!" + "<@" + newPresence.userId + ">";
@@ -554,7 +730,6 @@ client.on("presenceUpdate", (oldPresence, newPresence) => {
     // tugra
     
     if(newPresence.userId === config.users.tugra.id){ 
-        console.log(oldPresence);
         nextSpamTime = new Date(jsonData["users"]["tugra"]["next_spam"]);
         if ((nextSpamTime < currentDate) && newPresence.clientStatus.desktop === "online" && oldPresence? oldPresence.status === "offline" : false){
             var message = "Yo BG, what's up?" + "<@" + newPresence.userId + ">";
@@ -567,7 +742,6 @@ client.on("presenceUpdate", (oldPresence, newPresence) => {
     
     // bylo
     if(newPresence.userId === config.users.bylo.id){ 
-        console.log(oldPresence);
         nextSpamTime = new Date(jsonData["users"]["bylo"]["next_spam"]);
         if ((nextSpamTime < currentDate) && (newPresence.clientStatus.desktop === "online" && oldPresence.status? oldPresence.status === "offline" : false)
         ){
@@ -577,16 +751,21 @@ client.on("presenceUpdate", (oldPresence, newPresence) => {
             fs.writeFileSync("config.json", data);
         }
     }
-    /*
+    
     // yanis
     if(newPresence.userId === config.users.yanis.id){ 
+        
+        nextSpamTime = new Date(jsonData["users"]["yanis"]["next_spam"]);
         if (newPresence.clientStatus.desktop === "online" && oldPresence.status? oldPresence.status === "offline" : false){
             var message = "Mes salutations sage biteman!" + "<@" + newPresence.userId + ">";
             client.channels.cache.get(settings.channelId).send(message);
             client.users.cache.get(newPresence.userId).send('Bouh');
+            sonData["users"]["yanis"]["next_spam"] = nextDate; 
+            const data = JSON.stringify(jsonData, null, 2);
+            fs.writeFileSync("config.json", data);
         }
     }
-    */
+    
     // etienne
     if(newPresence.userId === config.users.metalem.id){ 
         nextSpamTime = new Date(jsonData["users"]["metalem"]["next_spam"]);
@@ -650,80 +829,122 @@ async function lolTrackerFunction(){
     let jsonData = JSON.parse(rawData);
 
     // ceci n'est qu'un test (à ameliorer)
-    const thomasProfile = await axios.get("https://euw1.api.riotgames.com/lol/summoner/v4/summoners/by-name/" + jsonData["users"]["thomas"]["leagueName"] + "?api_key=" + riotApiKey);
-    const marieProfile = await axios.get("https://euw1.api.riotgames.com/lol/summoner/v4/summoners/by-name/" + jsonData["users"]["marie"]["leagueName"] + "?api_key=" + riotApiKey);
+    const thomasProfile = await axios.get("https://euw1.api.riotgames.com/lol/summoner/v4/summoners/by-name/" + jsonData["users"]["thomas"]["league"]["leagueName"] + "?api_key=" + riotApiKey);
+    const marieProfile = await axios.get("https://euw1.api.riotgames.com/lol/summoner/v4/summoners/by-name/" + jsonData["users"]["marie"]["league"]["leagueName"] + "?api_key=" + riotApiKey);
     
     const thomas_puuid = thomasProfile.data.puuid;
     const marie_puuid = marieProfile.data.puuid;
 
+    const thomas_id = thomasProfile.data.id;
+    const marie_id = marieProfile.data.id;
+
     thomasMatchList = await axios.get("https://europe.api.riotgames.com/lol/match/v5/matches/by-puuid/" + thomas_puuid + "/ids" + "?api_key=" + riotApiKey);
     marieMatchList = await axios.get("https://europe.api.riotgames.com/lol/match/v5/matches/by-puuid/" + marie_puuid + "/ids" + "?api_key=" + riotApiKey);
     
+    const thomasAllRank = await axios.get("https://euw1.api.riotgames.com/lol/league/v4/entries/by-summoner/" + thomas_id + "?api_key=" + riotApiKey);
+    const marieAllRank = await axios.get("https://euw1.api.riotgames.com/lol/league/v4/entries/by-summoner/" + marie_id + "?api_key=" + riotApiKey);
+
+    if(thomasAllRank.data[0].queueType === 'RANKED_SOLO_5x5')
+        thomasRank = thomasAllRank.data[0];   
+    else
+        thomasRank = thomasAllRank.data[1];
+
+    if(marieAllRank.data[0].queueType === 'RANKED_SOLO_5x5')
+        marieRank = marieAllRank.data[0];
+    else
+        marieRank = marieAllRank.data[1];
+
+
     const thomasMatchListId = thomasMatchList.data[0];
     const marieMatchListId = marieMatchList.data[0];
 
     thomasLastMatch = await axios.get("https://europe.api.riotgames.com/lol/match/v5/matches/" + thomasMatchListId + "?api_key=" + riotApiKey);
     marieLastMatch = await axios.get("https://europe.api.riotgames.com/lol/match/v5/matches/" + marieMatchListId + "?api_key=" + riotApiKey);
     
-   
-    if(jsonData["users"]["thomas"]["lastGame"] !== thomasMatchListId ){ 
-        console.log(thomasLastMatch.data.info.participants)
+
+    if(jsonData["users"]["thomas"]["league"]["lastGame"] !== thomasMatchListId ){ 
+        var lpGain = "";
+        if(thomasLastMatch.data.info.queueId !== 420)
+            
+            lpGain = "c'était pas une solo duo"
+        else{
+            if (thomasRank.miniSeries !== undefined)
+                lpGain = thomasRank.miniSeries.progress
+            else{
+                lpGain = thomasRank.leaguePoints - jsonData["users"]["thomas"]["league"]["lp"];
+            }
+        }
         for (let pas = 0; pas < thomasLastMatch.data.info.participants.length; pas++) {
-            if(thomasLastMatch.data.info.participants[pas].summonerName === jsonData["users"]["thomas"]["leagueName"]){   
+            if(thomasLastMatch.data.info.participants[pas].summonerName === jsonData["users"]["thomas"]["league"]["leagueName"]){   
                 victory = thomasLastMatch.data.info.participants[pas].win;
                 if(victory){
                     var victoryScreen = new EmbedBuilder()
-                        .setDescription("hey " + jsonData["users"]["thomas"]["leagueName"] + " a " + "win")
+                        .setDescription("hey " + jsonData["users"]["thomas"]["league"]["leagueName"] + " a " + "win")
                         .addFields({name: "KDA : ", value: thomasLastMatch.data.info.participants[pas].kills + "/" +  thomasLastMatch.data.info.participants[pas].deaths + "/" + thomasLastMatch.data.info.participants[pas].assists})
-                        .addFields({name: "LP : ", value: "pas disponible pour le moment"})
+                        .addFields({name: "LP diff: ", value: lpGain.toString()})
                         .setThumbnail("http://ddragon.leagueoflegends.com/cdn/img/champion/splash/" + thomasLastMatch.data.info.participants[pas].championName + '_0.jpg');
                     client.channels.cache.get(settings.lolChannelId).send({ embeds: [victoryScreen] });  
                 }
                 else{
                     var victoryScreen = new EmbedBuilder()
-                        .setDescription("hey " + jsonData["users"]["thomas"]["leagueName"] + " a " + "lose")
+                        .setDescription("hey " + jsonData["users"]["thomas"]["league"]["leagueName"] + " a " + "lose")
                         .addFields({name: "KDA : ", value: thomasLastMatch.data.info.participants[pas].kills + "/" +  thomasLastMatch.data.info.participants[pas].deaths + "/" + thomasLastMatch.data.info.participants[pas].assists})
-                        .addFields({name: "LP : ", value: "pas disponible pour le moment"})
+                        .addFields({name: "LP diff: ", value: lpGain.toString()})
                         .setThumbnail("http://ddragon.leagueoflegends.com/cdn/img/champion/splash/" + thomasLastMatch.data.info.participants[pas].championName + '_0.jpg');      
                     client.channels.cache.get(settings.lolChannelId).send({ embeds: [victoryScreen] });
                 }
             }      
         } 
-        jsonData["users"]["thomas"]["lastGame"] = thomasMatchListId; 
+
+        jsonData["users"]["thomas"]["league"]["lp"] = thomasRank.leaguePoints;
+        jsonData["users"]["thomas"]["league"]["lastGame"] = thomasMatchListId; 
         const data = JSON.stringify(jsonData, null, 2);
         fs.writeFileSync("config.json", data);    
     }
 
-    if(jsonData["users"]["marie"]["lastGame"] !== marieMatchListId ){  
+    if(jsonData["users"]["marie"]["league"]["lastGame"] !== marieMatchListId ){  
+        var lpGain = "";
+        if(marieLastMatch.data.info.queueId !== 420)
+            
+            lpGain = "c'était pas une solo duo"
+        else{
+            if (marieRank.miniSeries !== undefined)
+                lpGain = marieRank.miniSeries.progress
+            else{
+                lpGain = marieRank.leaguePoints - jsonData["users"]["marie"]["league"]["lp"];
+            }
+        }
         for (let pas = 0; pas < marieLastMatch.data.info.participants.length; pas++) {
-            if(marieLastMatch.data.info.participants[pas].summonerName === jsonData["users"]["marie"]["leagueName"]){   
+            if(marieLastMatch.data.info.participants[pas].summonerName === jsonData["users"]["marie"]["league"]["leagueName"]){   
                 victory = marieLastMatch.data.info.participants[pas].win;
                 if(victory){
                     var victoryScreen = new EmbedBuilder()
-                        .setDescription("hey " + jsonData["users"]["marie"]["leagueName"] +  " a " + "win")
+                        .setDescription("hey " + jsonData["users"]["marie"]["league"]["leagueName"] +  " a " + "win")
                         .addFields({name: "KDA : ", value: marieLastMatch.data.info.participants[pas].kills + "/" +  marieLastMatch.data.info.participants[pas].deaths + "/" + marieLastMatch.data.info.participants[pas].assists})
-                        .addFields({name: "LP : ", value: "pas disponible pour le moment"})
-                        .setThumbnail("http://ddragon.leagueoflegends.com/cdn/img/champion/splash/" + marieLastMatch.data.info.participants[pas].championName + '_1.png')
+                        .addFields({name: "LP diff: ", value: lpGain.toString()})
+                        .setThumbnail("http://ddragon.leagueoflegends.com/cdn/img/champion/splash/" + marieLastMatch.data.info.participants[pas].championName + '_0.jpg')
                     client.channels.cache.get(settings.lolChannelId).send({ embeds: [victoryScreen] });  
                 }
                 else{
                     var victoryScreen = new EmbedBuilder()
-                        .setDescription("hey " + jsonData["users"]["marie"]["leagueName"] +  " a " + "lose")
+                        .setDescription("hey " + jsonData["users"]["marie"]["league"]["leagueName"] +  " a " + "lose")
                         .addFields({name: "KDA : ", value: marieLastMatch.data.info.participants[pas].kills + "/" +  marieLastMatch.data.info.participants[pas].deaths + "/" + marieLastMatch.data.info.participants[pas].assists})
-                        .addFields({name: "LP : ", value: "pas disponible pour le moment"})
-                        .setThumbnail("http://ddragon.leagueoflegends.com/cdn/img/champion/splash/" + marieLastMatch.data.info.participants[pas].championName + '_1.png')       
+                        .addFields({name: "LP diff: ", value: lpGain.toString()})
+                        .setThumbnail("http://ddragon.leagueoflegends.com/cdn/img/champion/splash/" + marieLastMatch.data.info.participants[pas].championName + '_0.jpg')       
                     client.channels.cache.get(settings.lolChannelId).send({ embeds: [victoryScreen] });
                 }
             } 
         }
-        jsonData["users"]["marie"]["lastGame"] = marieMatchListId; 
+
+        jsonData["users"]["marie"]["league"]["lp"] = marieRank.leaguePoints;
+        jsonData["users"]["marie"]["league"]["lastGame"] = marieMatchListId; 
         const data = JSON.stringify(jsonData, null, 2);
         fs.writeFileSync("config.json", data);      
     }
 }
 
-// 7 min intervalle : delai en millisecs
-setInterval(lolTrackerFunction, 1000*60*7);
+// 5 min intervalle : delai en millisecs
+setInterval(lolTrackerFunction, 1000*5*60);
 
 
 client.login(config.BOT_TOKEN);
