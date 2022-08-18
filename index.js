@@ -377,6 +377,27 @@ client.on('messageCreate', async (message) => {
                 break;
             
             case "report":
+                const currentDate = new Date();
+                const nextDate = new Date(new Date().getTime() + 23 * 60 * 60 * 1000);
+            
+                const rawData = fs.readFileSync("config.json");
+                let jsonData = JSON.parse(rawData);
+
+                for(user in config.users){
+                    if(config.users[user].id === message.author.id ){
+                        
+                        if(currentDate < new Date(jsonData["users"][user]["next_report"])){
+                            message.channel.send("T'as déjà report aujourd'hui, fait gaffe ou t'obtiens un report pour spam");
+                            console.log("done");
+                            return;
+                        }
+                        else{
+                            jsonData["users"][user]["next_report"] = nextDate; 
+                            const data = JSON.stringify(jsonData, null, 2);
+                            fs.writeFileSync("config.json", data);
+                        }
+                    }
+                }
                 const row4 = new ActionRowBuilder()
                         .addComponents(
                             new SelectMenuBuilder()
@@ -386,17 +407,22 @@ client.on('messageCreate', async (message) => {
                                     {
                                         label: 'Tilt',
                                         description: 'Ca lui servira de leçon',
-                                        value: 'rep1',
+                                        value: '0',
                                     },
                                     {
                                         label: 'Noob',
                                         description: 'l2p',
-                                        value: 'rep2',
+                                        value: '1',
                                     },
                                     {
                                         label: 'Toxic',
                                         description: 'Cheh',
-                                        value: 'rep3',
+                                        value: '2',
+                                    },
+                                    {
+                                        label: 'Spam',
+                                        description: "C'est pas cool",
+                                        value: '3',
                                     },
                                 ),
                         );
@@ -480,7 +506,7 @@ client.on('messageCreate', async (message) => {
                                 ),
                         );
                 
-                await message.reply({ content: "Select your game and your player", components: [row4, row5] });
+                await message.reply({ content: "Select your report and your toxic man", components: [row4, row5] });
    
 
                 const reportCollector = message.channel.createMessageComponentCollector({ componentType: ComponentType.SelectMenu, time: 10000, max: 2 });
@@ -490,8 +516,24 @@ client.on('messageCreate', async (message) => {
                 });
 
                 reportCollector.on('end', collected => {
-                    
-                    return;
+                    if(collected.size === 2){
+                        var report = "";
+                        var playerName = "";
+                        if(collected.at(0).customId === "select report"){
+                            report = collected.at(0).values[0];
+                            playerName = collected.at(1).values[0];
+                        }
+                        if(collected.at(0).customId === "select reported player"){
+                            playerName = collected.at(0).values[0];
+                            report = collected.at(1).values[0];
+                        }
+                        console.log(report)
+                        console.log(playerName)
+                        jsonData["users"][playerName]["reports"][report] += 1; 
+                        const data = JSON.stringify(jsonData, null, 2);
+                        fs.writeFileSync("config.json", data);
+                        
+                    }
                 });
 
                 break;
