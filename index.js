@@ -802,7 +802,7 @@ client.on("presenceUpdate", (oldPresence, newPresence) => {
             var message = "Mes salutations sage biteman!" + "<@" + newPresence.userId + ">";
             client.channels.cache.get(settings.channelId).send(message);
             client.users.cache.get(newPresence.userId).send('Bouh');
-            sonData["users"]["yanis"]["next_spam"] = nextDate; 
+            jsonData["users"]["yanis"]["next_spam"] = nextDate; 
             const data = JSON.stringify(jsonData, null, 2);
             fs.writeFileSync("config.json", data);
         }
