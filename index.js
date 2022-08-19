@@ -31,9 +31,6 @@ const client = new Client({
 });
 
 
-games_array = [ "valorant", "any", "lol", "smash", "csgo"];
-players_array = [ "thomas", "willy", "rayan", "marie", 'bylo', 'quentin', "louis"];
-
 
 const player = new Player(client, {
     leaveOnEmpty: false, // This options are optional.
@@ -175,6 +172,16 @@ client.on('messageCreate', async (message) => {
                 }
                 troll += 1;
                 break;
+
+            case "etc":
+                if (troll >= 2){
+                    message.channel.send("this is the true help command, gg! (coming soon with real things)");
+                }
+                else{
+                    message.channel.send("you haven't unlocked this ability yet");
+                    troll += 1;
+                }
+                break;
             case "ping":          
                 const row1 = new ActionRowBuilder()
                     .addComponents(
@@ -227,7 +234,7 @@ client.on('messageCreate', async (message) => {
                                     {
                                         label: 'Mini games (mk, pinturillo, ...)',
                                         description: 'This is also a description',
-                                        value: 'any',
+                                        value: 'mini games',
                                     },
                                 ),
                         );
@@ -333,6 +340,8 @@ client.on('messageCreate', async (message) => {
                             playerName = collected.at(0).values[0];
                             game = collected.at(1).values[0];
                         }
+
+                        console.log(playerName)
                         
                         const embed1 = new EmbedBuilder()
                         .setColor('#1a8175')
@@ -396,6 +405,9 @@ client.on('messageCreate', async (message) => {
                             const data = JSON.stringify(jsonData, null, 2);
                             fs.writeFileSync("config.json", data);
                         }
+                    }
+                    else{
+                        return;
                     }
                 }
                 const row4 = new ActionRowBuilder()
@@ -640,7 +652,7 @@ client.on('messageCreate', async (message) => {
             }
         } catch(error) {
             console.log(error);
-            var message = "ERROR ERROR! EMMERGENCY: le dev code mal!";
+            var message = "ERROR ERROR! EMMERGENCY: William veut me break down!";
             client.channels.cache.get(settings.channelId).send(message);
         }
     }
