@@ -1,5 +1,6 @@
 {
   "name": "discord_bot",
+  "type":"module",
   "version": "1.0.0",
   "description": "super bot coaché par bylo mais marie veut une dédicace",
   "main": "index.js",
