@@ -647,8 +647,7 @@ export default async function Message(message) {
                         console.log(ProgressBar.prettier);
                     }
                 } catch(error) {
-                    var message = "ERROR ERROR! EMMERGENCY: William veut me break down!";
-                    client.channels.cache.get(settings.channelId).send(message);
+                    console.log('zik broken')
                 }
         }
     }
