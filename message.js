@@ -1,72 +1,13 @@
-import config from "../config.json" assert {type: "json"};
+import config from "./config.json" assert {type: "json"};
 import { Player } from 'discord-music-player';
-import { ActivityType, ComponentType, EmbedBuilder, ActionRowBuilder, SelectMenuBuilder, Client, GatewayIntentBits, Partials } from 'discord.js';
+import { ActivityType, ComponentType, EmbedBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder, SelectMenuBuilder, Client, GatewayIntentBits, Partials } from 'discord.js';
 import fs from 'fs'
 
 
-export const client = new Client({
-	intents: [
-		GatewayIntentBits.Guilds, 
-		GatewayIntentBits.GuildMessages, 
-		GatewayIntentBits.GuildPresences,
-        GatewayIntentBits.GuildVoiceStates,
-		GatewayIntentBits.GuildMessageReactions, 
-		GatewayIntentBits.DirectMessages,
-        GatewayIntentBits.MessageContent
-	], 
-	partials: [Partials.Channel, Partials.Message, Partials.User, Partials.GuildMember, Partials.Reaction] 
-});
 
-export const settings = {
-    suffix: '?',
-    prefix: '?',
-    channelId: "995053789625200730",
-    lolChannelId: "700486726899990528",
-};
+
 
 var troll = 0;
-
-
-const player = new Player(client, {
-    leaveOnEmpty: false, // This options are optional.
-});
-// You can define the Player as *client.player* to easily access it.
-client.player = player;
-
-
-// Init the event listener only once (at the top of your code).
-client.player
-    // Emitted when channel was empty.
-    .on('channelEmpty',  (queue) =>
-        console.log(`Everyone left the Voice Channel, queue ended.`))
-    // Emitted when a song was added to the queue.
-    .on('songAdd',  (queue, song) =>
-        console.log(`Song ${song} was added to the queue.`))
-    // Emitted when a playlist was added to the queue.
-    .on('playlistAdd',  (queue, playlist) =>
-        console.log(`Playlist ${playlist} with ${playlist.songs.length} was added to the queue.`))
-    // Emitted when there was no more music to play.
-    .on('queueDestroyed',  (queue) =>
-        console.log(`The queue was destroyed.`))
-    // Emitted when the queue was destroyed (either by ending or stopping).    
-    .on('queueEnd',  (queue) =>
-        console.log(`The queue has ended.`))
-    // Emitted when a song changed.
-    .on('songChanged', (queue, newSong, oldSong) =>
-        console.log(`${newSong} is now playing.`))
-    // Emitted when a first song in the queue started playing.
-    .on('songFirst',  (queue, song) =>
-        console.log(`Started playing ${song}.`))
-    // Emitted when someone disconnected the bot from the channel.
-    .on('clientDisconnect', (queue) =>
-        console.log(`I was kicked from the Voice Channel, queue ended.`))
-    // Emitted when deafenOnJoin is true and the bot was undeafened
-    .on('clientUndeafen', (queue) =>
-        console.log(`I got undefeanded.`))
-    // Emitted when there was an error in runtime
-    .on('error', (error, queue) => {
-        console.log(`Error: ${error} in ${queue.guild.name}`);
-    });
 
 
 
@@ -193,7 +134,7 @@ export default async function Message(message) {
                                 },
                             ),
                     );
-                await message.reply({ content: 'Pong!', components: [row1] });
+                await message.reply({ content: 'Pong!', ephemeral: true , components: [row1]  });
                 break;
             case "game": 
                                 
@@ -317,7 +258,7 @@ export default async function Message(message) {
                     return (i.message.reference.messageId === message.id && i.user.id === message.author.id);
                 };
 
-                const collectorGame = message.channel.createMessageComponentCollector({filter: filter1, componentType: ComponentType.SelectMenu, time: 20000, max: 2 });
+                const collectorGame = message.channel.createMessageComponentCollector({filter: filter1, componentType: ComponentType.SelectMenu, time: 30000, max: 2 });
                 
                
                 collectorGame.on('end', collected => {
@@ -518,7 +459,7 @@ export default async function Message(message) {
                 };
                 
 
-                const reportCollector = message.channel.createMessageComponentCollector({filter: filter2, max: 2, componentType: ComponentType.SelectMenu, time: 20000 });
+                const reportCollector = message.channel.createMessageComponentCollector({filter: filter2, max: 2, componentType: ComponentType.SelectMenu, time: 30000 });
                               
             
                 
@@ -572,12 +513,24 @@ export default async function Message(message) {
                     }
 
                     if(command === 'playlist') {
+    
                         let queue = client.player.createQueue(message.guild.id);
                         await queue.join(message.member.voice.channel);
                         let song = await queue.playlist(args.join(' ')).catch(_ => {
                             if(!guildQueue)
                                 queue.stop();
                         });
+
+                        const nextButton = new ActionRowBuilder()
+                        .addComponents(
+                            new ButtonBuilder()
+                                .setCustomId('nextButtonMusic')
+                                .setLabel('Next')
+                                .setStyle(ButtonStyle.Primary),
+                        );
+
+                        await message.reply({ content: 'Next!', components: [nextButton] });
+
                     }
 
                     if(command === 'skip') {
@@ -647,7 +600,7 @@ export default async function Message(message) {
                         console.log(ProgressBar.prettier);
                     }
                 } catch(error) {
-                    console.log('zik broken')
+                    console.log(error)
                 }
         }
     }
