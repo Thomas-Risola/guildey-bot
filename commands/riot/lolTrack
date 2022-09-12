@@ -1,0 +1,97 @@
+/*
+
+function sleep(ms) {
+    return new Promise((resolve) => {
+      setTimeout(resolve, ms);
+    });
+  }
+
+
+// number of requete ? 6 for now, limite à 20
+// faire un for user in users 
+async function lolTrackerFunction(){ 
+    
+    let rawData = fs.readFileSync("config.json");
+    let jsonData = JSON.parse(rawData);
+
+    for (let user in config.users)
+    {
+        await sleep(1000);
+
+        
+        try
+        {
+
+            let thomasProfile = await axios.get("https://euw1.api.riotgames.com/lol/summoner/v4/summoners/by-name/" + jsonData["users"][user]["league"]["leagueName"] + "?api_key=" + riotApiKey);
+
+            let thomas_puuid = thomasProfile.data.puuid;
+            let thomas_id = thomasProfile.data.id;
+        
+            let thomasMatchList = await axios.get("https://europe.api.riotgames.com/lol/match/v5/matches/by-puuid/" + thomas_puuid + "/ids" + "?api_key=" + riotApiKey);
+            
+            let thomasAllRank = await axios.get("https://euw1.api.riotgames.com/lol/league/v4/entries/by-summoner/" + thomas_id + "?api_key=" + riotApiKey);
+        
+            let thomasRank = null;
+            if(thomasAllRank.data[0].queueType === 'RANKED_SOLO_5x5')
+                thomasRank = thomasAllRank.data[0];   
+            else
+                thomasRank = thomasAllRank.data[1];
+
+
+            let thomasMatchListId = thomasMatchList.data[0];
+
+            let thomasLastMatch = await axios.get("https://europe.api.riotgames.com/lol/match/v5/matches/" + thomasMatchListId + "?api_key=" + riotApiKey);
+            
+
+            if(jsonData["users"][user]["league"]["lastGame"] !== thomasMatchListId ){ 
+                var lpGain = "";
+                if(thomasLastMatch.data.info.queueId !== 420)
+                    
+                    lpGain = "c'était pas une solo duo"
+                else{
+                    if (thomasRank.miniSeries !== undefined)
+                        lpGain = thomasRank.miniSeries.progress
+                    else{
+                        lpGain = thomasRank.leaguePoints - jsonData["users"][user]["league"]["lp"];
+                    }
+                }
+                for (let pas = 0; pas < thomasLastMatch.data.info.participants.length; pas++) {
+                    if(thomasLastMatch.data.info.participants[pas].summonerName === jsonData["users"][user]["league"]["leagueName"]){   
+                        let victory = thomasLastMatch.data.info.participants[pas].win;
+                        if(victory){
+                            var victoryScreen = new EmbedBuilder()
+                                .setDescription("hey " + jsonData["users"][user]["league"]["leagueName"] + " a " + "win")
+                                .addFields({name: "KDA : ", value: thomasLastMatch.data.info.participants[pas].kills + "/" +  thomasLastMatch.data.info.participants[pas].deaths + "/" + thomasLastMatch.data.info.participants[pas].assists})
+                                .addFields({name: "LP diff: ", value: lpGain.toString()})
+                                .setThumbnail("http://ddragon.leagueoflegends.com/cdn/img/champion/splash/" + thomasLastMatch.data.info.participants[pas].championName + '_0.jpg');
+                            client.channels.cache.get(settings.lolChannelId).send({ embeds: [victoryScreen] });  
+                        }
+                        else{
+                            var victoryScreen = new EmbedBuilder()
+                                .setDescription("hey " + jsonData["users"][user]["league"]["leagueName"] + " a " + "lose")
+                                .addFields({name: "KDA : ", value: thomasLastMatch.data.info.participants[pas].kills + "/" +  thomasLastMatch.data.info.participants[pas].deaths + "/" + thomasLastMatch.data.info.participants[pas].assists})
+                                .addFields({name: "LP diff: ", value: lpGain.toString()})
+                                .setThumbnail("http://ddragon.leagueoflegends.com/cdn/img/champion/splash/" + thomasLastMatch.data.info.participants[pas].championName + '_0.jpg');      
+                            client.channels.cache.get(settings.lolChannelId).send({ embeds: [victoryScreen] });
+                        }
+                    }      
+                } 
+
+                jsonData["users"][user]["league"]["lp"] = thomasRank.leaguePoints;
+                jsonData["users"][user]["league"]["lastGame"] = thomasMatchListId; 
+                const data = JSON.stringify(jsonData, null, 2);
+                fs.writeFileSync("config.json", data);    
+            } 
+        }
+        catch(error)
+        {
+            continue;
+        }
+    }
+   
+}
+
+// 5 min intervalle : delai en millisecs
+setInterval(lolTrackerFunction, 1000*7*60);
+
+*/

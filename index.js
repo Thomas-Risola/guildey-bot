@@ -1,15 +1,13 @@
 const config = require("./config.json");
+const usersData = require("./users-data.json");
 const Discord = require('discord.js');
-const { ActivityType, EmbedBuilder, ActionRowBuilder, SelectMenuBuilder, Client, GatewayIntentBits, Partials } = require('discord.js');
 const axios = require('axios');
 const fs = require('fs');
-const { ComponentType } = require('discord.js');
+const { Client, GatewayIntentBits, Partials } = require('discord.js');
 const { Player } = require('discord-music-player');
 
-const riotApiKey = config.riotApiKey;
 
 
-/// initialisation client (un jour change dossier?)
 const client = new Client({
 	intents: [
 		GatewayIntentBits.Guilds, 
@@ -67,20 +65,14 @@ client.player
     });
 
 
+// data privée
+client.usersData = usersData;
 
+client.config = config;
 
-client.on("ready", () => {
-    console.log("Bot has started");
-  
-    client.user.setPresence({
-        activities: [{ name: `Le serveur`, type: ActivityType.Watching }],
-        status: 'dnd',
-      });
-  });
-
+// initialisation des commands et events
 
 client.commands = new Discord.Collection();
-
 
 fs.readdirSync('./commands').forEach(dirs => {
     const commands = fs.readdirSync(`./commands/${dirs}`).filter(files => files.endsWith('.js'));
@@ -100,7 +92,7 @@ for (const file of events) {
     client.on(file.split(".")[0], event.bind(null, client));
 };
 
-
+// lancement du bot
 
 client.login(config.BOT_TOKEN);
 
