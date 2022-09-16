@@ -1,3 +1,5 @@
+const { ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
+
 module.exports = {
     name: 'playlist',
     aliases: null,
@@ -16,5 +18,17 @@ module.exports = {
             if(!guildQueue)
                 queue.stop();
         });
+
+
+        const nextButton = new ActionRowBuilder()
+            .addComponents(
+                new ButtonBuilder()
+                    .setCustomId('skipMusicButton')
+                    .setLabel('Next')
+                    .setStyle(ButtonStyle.Primary),
+            );
+
+        await message.reply({ content: 'Next!', components: [nextButton] });
+
     }
 };

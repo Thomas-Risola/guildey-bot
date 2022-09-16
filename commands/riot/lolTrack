@@ -1,15 +1,17 @@
-/*
-
 function sleep(ms) {
     return new Promise((resolve) => {
       setTimeout(resolve, ms);
     });
   }
 
+module.exports = {
+    name: 'lolTrack',
+    aliases: null,
+    category: 'riot',
 
 // number of requete ? 6 for now, limite à 20
 // faire un for user in users 
-async function lolTrackerFunction(){ 
+async execute(){ 
     
     let rawData = fs.readFileSync("config.json");
     let jsonData = JSON.parse(rawData);
@@ -91,7 +93,5 @@ async function lolTrackerFunction(){
    
 }
 
-// 5 min intervalle : delai en millisecs
-setInterval(lolTrackerFunction, 1000*7*60);
-
-*/
+};
+    
