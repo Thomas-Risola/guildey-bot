@@ -4,8 +4,12 @@ module.exports = {
     category: 'music',
 
     async execute(client, interaction, args) {
-        console.log("mdr")
+        try{
         let guildQueue = client.player.getQueue(interaction.guild.id);
         guildQueue.skip();
+        }
+        catch(error){
+            console.log("mdr")
+        }
     }
 };
