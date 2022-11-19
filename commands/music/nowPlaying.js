@@ -5,7 +5,12 @@ module.exports = {
     utilisation: 'nowPlaying ?',
 
     async execute(client, message, args) {
+        try{
         let guildQueue = client.player.getQueue(message.guild.id);
-        console.log(`Now playing: ${guildQueue.nowPlaying}`);
+        message.channel.send(`Now playing: ${guildQueue.nowPlaying}`);
+        }
+        catch(error){
+            message.channel.send(`Je joue pas pour l'instant, j'ai la flemme.`);
+        }
     }
 };

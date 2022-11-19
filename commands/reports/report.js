@@ -136,6 +136,11 @@ module.exports = {
                                 value: "bylo",
                             },
                             {
+                                label: 'TheAarnold',
+                                description: 'This is description',
+                                value: "manel",
+                            },
+                            {
                                 label: 'Quentin',
                                 description: 'This is also a description',
                                 value: "quentin",
